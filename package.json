@@ -1,0 +1,13 @@
+{
+  "name": "world-cup-ticket-prices",
+  "version": "1.0.0",
+  "description": "World Cup Ticket Prices - Find and Book Tickets",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "keywords": ["world-cup", "tickets", "prices"],
+  "author": "",
+  "license": "ISC"
+}

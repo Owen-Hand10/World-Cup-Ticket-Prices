@@ -1,0 +1,68 @@
+{
+  "ticketSites": [
+    {
+      "id": "ticketmaster",
+      "name": "Ticketmaster",
+      "url": "https://ticketmaster.com",
+      "priceMultiplier": 1.0,
+      "feePercentage": 15,
+      "description": "Official ticketing partner"
+    },
+    {
+      "id": "stubhub",
+      "name": "StubHub",
+      "url": "https://stubhub.com",
+      "priceMultiplier": 1.05,
+      "feePercentage": 12,
+      "description": "Secondary market"
+    },
+    {
+      "id": "vivid-seats",
+      "name": "Vivid Seats",
+      "url": "https://vividseats.com",
+      "priceMultiplier": 0.98,
+      "feePercentage": 18,
+      "description": "Live event tickets"
+    },
+    {
+      "id": "seatgeek",
+      "name": "SeatGeek",
+      "url": "https://seatgeek.com",
+      "priceMultiplier": 1.02,
+      "feePercentage": 10,
+      "description": "Event ticket search"
+    },
+    {
+      "id": "eventbrite",
+      "name": "Eventbrite",
+      "url": "https://eventbrite.com",
+      "priceMultiplier": 0.95,
+      "feePercentage": 20,
+      "description": "Ticket marketplace"
+    }
+  ],
+  "seatStatuses": {
+    "available": {
+      "label": "Available",
+      "color": "#51cf66",
+      "probability": 0.6
+    },
+    "sold": {
+      "label": "Sold",
+      "color": "#ff6b6b",
+      "probability": 0.3
+    },
+    "premium": {
+      "label": "Premium",
+      "color": "#ffd43b",
+      "probability": 0.1
+    }
+  },
+  "levelPriceMultipliers": {
+    "ground": 1.0,
+    "second": 1.33,
+    "third": 0.67,
+    "vip": 2.67,
+    "premium": 2.0
+  }
+}

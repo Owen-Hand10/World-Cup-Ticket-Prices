@@ -1,0 +1,1137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>World Cup Stadium Map - Ticket Prices</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #09101f 0%, #0f1724 40%, #141e31 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            color: #fff;
+            position: relative;
+            overflow: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background:
+                radial-gradient(circle at 25% 30%, rgba(99, 102, 241, 0.12), transparent 18%),
+                radial-gradient(circle at 80% 60%, rgba(255, 193, 7, 0.08), transparent 20%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            display: flex;
+            background: rgba(7, 12, 22, 0.96);
+            border-radius: 28px;
+            box-shadow: 0 36px 120px rgba(0, 0, 0, 0.45);
+            width: 100%;
+            max-width: 1400px;
+            height: 82vh;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: rgba(8, 13, 26, 0.98);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .header h1 {
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .match-subtitle {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.72);
+            margin-top: 6px;
+            line-height: 1.4;
+        }
+
+        .level-filter {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .level-filter label {
+            font-weight: 500;
+        }
+
+        .level-filter select {
+            padding: 8px 16px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .level-filter select:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .level-filter select option {
+            background: #667eea;
+            color: white;
+        }
+
+        .map-container {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 30px;
+            overflow: auto;
+            position: relative;
+        }
+
+        #stadium-map {
+            width: 100%;
+            height: 100%;
+            max-width: 760px;
+            max-height: 760px;
+        }
+
+        .stadium-section {
+            cursor: pointer;
+            transition: all 0.25s ease;
+            stroke-width: 2;
+            stroke: rgba(255, 255, 255, 0.12);
+            filter: drop-shadow(0 0 18px rgba(255, 193, 7, 0.08));
+        }
+
+        .stadium-section:hover {
+            filter: brightness(1.12) drop-shadow(0 0 24px rgba(255, 193, 7, 0.2));
+            stroke-width: 3;
+        }
+
+        .stadium-section.selected {
+            stroke: #ffb703;
+            stroke-width: 4;
+            filter: brightness(1.2) drop-shadow(0 0 28px rgba(255, 193, 7, 0.35));
+        }
+
+        .seat {
+            cursor: pointer;
+            transition: all 0.2s ease;
+            stroke: #ffffff;
+            stroke-width: 0.75;
+        }
+
+        .seat:hover {
+            filter: brightness(1.1);
+        }
+
+        .seat.available {
+            fill: #4cd964;
+        }
+
+        .seat.sold {
+            fill: #ff6b6b;
+        }
+
+        .seat.selected {
+            fill: #ffd43b;
+            stroke: #ff922b;
+            stroke-width: 1.5;
+        }
+
+        .sidebar {
+            width: 350px;
+            background: rgba(12, 16, 31, 0.98);
+            border-left: 1px solid rgba(255,255,255,0.08);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .sidebar-header {
+            background: rgba(255, 255, 255, 0.04);
+            padding: 24px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .sidebar-header h2 {
+            font-size: 20px;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .close-btn {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            color: #fff;
+            width: 38px;
+            height: 38px;
+            border-radius: 12px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .close-btn:hover {
+            background: rgba(255, 193, 7, 0.18);
+            color: #0f0f1e;
+        }
+
+        .sidebar-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 24px;
+        }
+
+        .empty-state {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: rgba(255, 255, 255, 0.72);
+            text-align: center;
+            font-size: 14px;
+        }
+
+        .seat-info {
+            margin-bottom: 24px;
+        }
+
+        .seat-info-header {
+            background: rgba(255, 255, 255, 0.06);
+            padding: 18px;
+            border-radius: 20px;
+            margin-bottom: 18px;
+            border-left: 4px solid #ffc107;
+        }
+
+        .seat-label {
+            font-size: 26px;
+            font-weight: 800;
+            color: #ffd43b;
+            margin-bottom: 6px;
+        }
+
+        .seat-section {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.72);
+        }
+
+        .price-item {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        .price-item:hover {
+            background: rgba(255, 255, 255, 0.09);
+            border-color: rgba(255, 193, 7, 0.2);
+        }
+
+        .price-site-name {
+            font-size: 14px;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .price-site-fee {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.65);
+        }
+
+        .price-value {
+            font-size: 20px;
+            font-weight: 800;
+            color: #ffd43b;
+        }
+
+        .buy-btn {
+            width: 100%;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            padding: 12px 14px;
+            background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);
+            color: #0f0f1e;
+            border: none;
+            border-radius: 14px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            text-decoration: none;
+            margin-top: 12px;
+        }
+
+        .buy-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 10px 22px rgba(255, 193, 7, 0.24);
+        }
+
+        .breadcrumb {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 20px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+        }
+
+        .breadcrumb button {
+            background: none;
+            border: none;
+            color: #ffc107;
+            cursor: pointer;
+            font-size: 12px;
+            text-decoration: underline;
+        }
+
+        .breadcrumb button:hover {
+            color: #ffb703;
+        }
+
+        .zoom-controls {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+            z-index: 10;
+        }
+
+        .zoom-btn {
+            width: 44px;
+            height: 44px;
+            border: 1px solid rgba(255,255,255,0.14);
+            background: rgba(255,255,255,0.06);
+            color: #fff;
+            border-radius: 14px;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: 800;
+            transition: all 0.25s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .zoom-btn:hover {
+            background: rgba(255, 193, 7, 0.15);
+            color: #0f0f1e;
+            border-color: rgba(255, 193, 7, 0.35);
+        }
+
+        .zoom-btn:disabled {
+            opacity: 0.45;
+            cursor: not-allowed;
+        }
+
+        .stadium-section:hover {
+            filter: brightness(1.1);
+            stroke-width: 3;
+        }
+
+        .stadium-section.selected {
+            stroke: #ff6b6b;
+            stroke-width: 3;
+        }
+
+        .seat {
+            cursor: pointer;
+            transition: all 0.2s ease;
+            stroke: #333;
+            stroke-width: 0.5;
+        }
+
+        .seat:hover {
+            filter: brightness(0.85);
+        }
+
+        .seat.available {
+            fill: #51cf66;
+        }
+
+        .seat.sold {
+            fill: #ff6b6b;
+        }
+
+        .seat.selected {
+            fill: #ffd43b;
+            stroke: #ff922b;
+            stroke-width: 1;
+        }
+
+        .sidebar {
+            width: 350px;
+            background: white;
+            border-left: 1px solid #ddd;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .sidebar-header {
+            background: #f8f9fa;
+            padding: 20px;
+            border-bottom: 1px solid #ddd;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .sidebar-header h2 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #999;
+            transition: color 0.3s ease;
+        }
+
+        .close-btn:hover {
+            color: #333;
+        }
+
+        .sidebar-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .empty-state {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: #999;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        .seat-info {
+            margin-bottom: 20px;
+        }
+
+        .seat-info-header {
+            background: #f0f7ff;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border-left: 4px solid #667eea;
+        }
+
+        .seat-label {
+            font-size: 24px;
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+
+        .seat-section {
+            font-size: 13px;
+            color: #666;
+        }
+
+        .price-section {
+            margin-bottom: 15px;
+        }
+
+        .price-section h3 {
+            font-size: 13px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .price-item {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 6px;
+            padding: 12px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        .price-item:hover {
+            background: #f1f5ff;
+            border-color: #667eea;
+        }
+
+        .price-site {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        .price-site-name {
+            font-size: 13px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .price-site-fee {
+            font-size: 11px;
+            color: #999;
+        }
+
+        .price-value {
+            font-size: 18px;
+            font-weight: 700;
+            color: #667eea;
+        }
+
+        .buy-btn {
+            width: 100%;
+            padding: 10px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            text-align: center;
+            margin-top: 8px;
+        }
+
+        .buy-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(102, 126, 234, 0.4);
+        }
+
+        .breadcrumb {
+            font-size: 12px;
+            color: #999;
+            margin-bottom: 20px;
+            padding: 10px;
+            background: #f0f7ff;
+            border-radius: 4px;
+        }
+
+        .breadcrumb button {
+            background: none;
+            border: none;
+            color: #667eea;
+            cursor: pointer;
+            font-size: 12px;
+            text-decoration: underline;
+        }
+
+        .breadcrumb button:hover {
+            color: #764ba2;
+        }
+
+        .zoom-controls {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            display: flex;
+            gap: 8px;
+            z-index: 10;
+        }
+
+        .zoom-btn {
+            width: 40px;
+            height: 40px;
+            border: 2px solid #667eea;
+            background: white;
+            color: #667eea;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .zoom-btn:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .zoom-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        @media (max-width: 1024px) {
+            .container {
+                flex-direction: column;
+                height: auto;
+                max-height: 100vh;
+            }
+
+            .main-content {
+                height: 60vh;
+            }
+
+            .sidebar {
+                width: 100%;
+                max-height: 40vh;
+                border-left: none;
+                border-top: 1px solid #ddd;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                position: absolute;
+                width: 100%;
+                height: 50%;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                border-left: none;
+                border-top: 1px solid #ddd;
+                background: white;
+                z-index: 100;
+            }
+
+            .map-container {
+                padding: 20px;
+            }
+        }
+
+        /* Scrollbar styling */
+        .sidebar-content::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .sidebar-content::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        .sidebar-content::-webkit-scrollbar-thumb {
+            background: #ddd;
+            border-radius: 3px;
+        }
+
+        .sidebar-content::-webkit-scrollbar-thumb:hover {
+            background: #999;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="main-content">
+            <div class="header">
+                <div>
+                    <h1 id="map-title">⚽ World Cup Stadium Map</h1>
+                    <div id="match-subtitle" class="match-subtitle">Choose your section and seat with a modern stadium view.</div>
+                </div>
+                <div class="level-filter">
+                    <label for="level-select">View Level:</label>
+                    <select id="level-select">
+                        <option value="all">All Levels</option>
+                        <option value="ground">Ground Level</option>
+                        <option value="second">Second Level</option>
+                        <option value="third">Third Level</option>
+                        <option value="vip">VIP Premium</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="map-container">
+                <svg id="stadium-map" viewBox="0 0 960 720" preserveAspectRatio="xMidYMid meet">
+                    <defs>
+                        <linearGradient id="arenaBg" x1="0" y1="0" x2="1" y2="1">
+                            <stop offset="0%" stop-color="#0e1728" />
+                            <stop offset="100%" stop-color="#111b2d" />
+                        </linearGradient>
+                        <linearGradient id="vipGradient" x1="0" y1="0" x2="1" y2="1">
+                            <stop offset="0%" stop-color="#ffd43b" />
+                            <stop offset="100%" stop-color="#ffb703" />
+                        </linearGradient>
+                    </defs>
+
+                    <rect width="960" height="720" fill="url(#arenaBg)" />
+                    <ellipse cx="480" cy="360" rx="430" ry="300" fill="#101a2c" />
+                    <ellipse cx="480" cy="360" rx="380" ry="260" fill="#0d1423" />
+                    <path d="M140,220 C130,110 200,70 350,70 L610,70 C760,70 830,110 820,220 L820,500 C830,610 760,650 610,650 L350,650 C200,650 130,610 140,500 Z"
+                          fill="rgba(255,255,255,0.05)" />
+                    <rect x="280" y="230" width="400" height="260" rx="130" fill="#1b583f" stroke="#79d9a1" stroke-width="5" />
+                    <path d="M300,360 Q360,230 480,230 Q600,230 660,360 Q600,490 480,490 Q360,490 300,360 Z"
+                          fill="none" stroke="#c5f6d1" stroke-width="4" />
+                    <line x1="480" y1="230" x2="480" y2="490" stroke="#c5f6d1" stroke-width="3" />
+                    <circle cx="480" cy="360" r="62" fill="none" stroke="#c5f6d1" stroke-width="3" />
+                    <circle cx="480" cy="360" r="18" fill="#c5f6d1" />
+
+                    <g class="stadium-section" data-section="N1" data-level="ground">
+                        <path d="M330,135 L630,135 C640,135 650,145 650,155 L650,195 C650,205 640,215 630,215 L330,215 C320,215 310,205 310,195 L310,155 C310,145 320,135 330,135 Z"
+                              fill="#4d7cff" />
+                        <text x="480" y="178" text-anchor="middle" fill="#fff" font-size="18" font-weight="800">N1</text>
+                    </g>
+                    <g class="stadium-section" data-section="S1" data-level="ground">
+                        <path d="M330,505 L630,505 C640,505 650,515 650,525 L650,565 C650,575 640,585 630,585 L330,585 C320,585 310,575 310,565 L310,525 C310,515 320,505 330,505 Z"
+                              fill="#4d7cff" />
+                        <text x="480" y="548" text-anchor="middle" fill="#fff" font-size="18" font-weight="800">S1</text>
+                    </g>
+                    <g class="stadium-section" data-section="E1" data-level="ground">
+                        <path d="M705,255 L760,255 C770,255 780,265 780,275 L780,445 C780,455 770,465 760,465 L705,465 C695,465 685,455 685,445 L685,275 C685,265 695,255 705,255 Z"
+                              fill="#4d7cff" />
+                        <text x="742" y="360" text-anchor="middle" fill="#fff" font-size="18" font-weight="800">E1</text>
+                    </g>
+                    <g class="stadium-section" data-section="W1" data-level="ground">
+                        <path d="M180,255 L235,255 C245,255 255,265 255,275 L255,445 C255,455 245,465 235,465 L180,465 C170,465 160,455 160,445 L160,275 C160,265 170,255 180,255 Z"
+                              fill="#4d7cff" />
+                        <text x="215" y="360" text-anchor="middle" fill="#fff" font-size="18" font-weight="800">W1</text>
+                    </g>
+                    <g class="stadium-section" data-section="N2" data-level="second">
+                        <path d="M360,110 L620,110 C630,110 640,120 640,130 L640,150 C640,160 630,170 620,170 L360,170 C350,170 340,160 340,150 L340,130 C340,120 350,110 360,110 Z"
+                              fill="#7f5dfc" />
+                        <text x="480" y="140" text-anchor="middle" fill="#fff" font-size="14" font-weight="700">N2</text>
+                    </g>
+                    <g class="stadium-section" data-section="S2" data-level="second">
+                        <path d="M360,550 L620,550 C630,550 640,560 640,570 L640,590 C640,600 630,610 620,610 L360,610 C350,610 340,600 340,590 L340,570 C340,560 350,550 360,550 Z"
+                              fill="#7f5dfc" />
+                        <text x="480" y="580" text-anchor="middle" fill="#fff" font-size="14" font-weight="700">S2</text>
+                    </g>
+                    <g class="stadium-section" data-section="E-VIP" data-level="vip">
+                        <path d="M720,180 L760,180 C770,180 780,190 780,200 L780,250 C780,260 770,270 760,270 L720,270 C710,270 700,260 700,250 L700,200 C700,190 710,180 720,180 Z"
+                              fill="url(#vipGradient)" />
+                        <text x="750" y="225" text-anchor="middle" fill="#0f0f1e" font-size="14" font-weight="800">VIP</text>
+                    </g>
+                    <g class="stadium-section" data-section="W-VIP" data-level="vip">
+                        <path d="M200,180 L240,180 C250,180 260,190 260,200 L260,250 C260,260 250,270 240,270 L200,270 C190,270 180,260 180,250 L180,200 C180,190 190,180 200,180 Z"
+                              fill="url(#vipGradient)" />
+                        <text x="220" y="225" text-anchor="middle" fill="#0f0f1e" font-size="14" font-weight="800">VIP</text>
+                    </g>
+                    <g class="stadium-section" data-section="N3" data-level="third">
+                        <path d="M320,80 L640,80 C650,80 660,90 660,100 L660,120 C660,130 650,140 640,140 L320,140 C310,140 300,130 300,120 L300,100 C300,90 310,80 320,80 Z"
+                              fill="#ffb347" />
+                        <text x="480" y="110" text-anchor="middle" fill="#0f0f1e" font-size="14" font-weight="700">N3</text>
+                    </g>
+                    <g class="stadium-section" data-section="S3" data-level="third">
+                        <path d="M320,560 L640,560 C650,560 660,570 660,580 L660,600 C660,610 650,620 640,620 L320,620 C310,620 300,610 300,600 L300,580 C300,570 310,560 320,560 Z"
+                              fill="#ffb347" />
+                        <text x="480" y="590" text-anchor="middle" fill="#0f0f1e" font-size="14" font-weight="700">S3</text>
+                    </g>
+                </svg>
+
+                <div class="zoom-controls">
+                    <button class="zoom-btn" id="zoom-in" title="Zoom In">+</button>
+                    <button class="zoom-btn" id="zoom-out" title="Zoom Out">−</button>
+                    <button class="zoom-btn" id="zoom-reset" title="Reset View">↺</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h2 id="sidebar-title">Select a Section</h2>
+                <button class="close-btn" id="close-sidebar" title="Close">✕</button>
+            </div>
+            <div class="sidebar-content">
+                <div class="empty-state" id="empty-state">
+                    Click on a section to view seats and prices
+                </div>
+                <div id="sidebar-body" style="display: none;">
+                    <div class="breadcrumb">
+                        <button id="back-to-section">← Back to Section</button>
+                    </div>
+                    <div class="seat-info">
+                        <div class="seat-info-header">
+                            <div class="seat-label" id="seat-label">-</div>
+                            <div class="seat-section" id="seat-section">-</div>
+                        </div>
+                    </div>
+                    <div class="price-section">
+                        <h3>Ticket Prices</h3>
+                        <div id="price-list"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/script.js"></script>
+    <script>
+        // Reference to stadiumData will be populated from ticketApp
+        let stadiumData = null;
+
+        // State management
+        let state = {
+            currentView: 'stadium',
+            selectedSection: null,
+            selectedSeat: null,
+            currentLevel: 'all',
+            zoomLevel: 1,
+            panX: 0,
+            panY: 0
+        };
+
+        // DOM elements
+        const map = document.getElementById('stadium-map');
+        const sectionElements = document.querySelectorAll('.stadium-section');
+        const sidebar = document.querySelector('.sidebar');
+        const emptyState = document.getElementById('empty-state');
+        const sidebarBody = document.getElementById('sidebar-body');
+        const sidebarTitle = document.getElementById('sidebar-title');
+        const closeSidebarBtn = document.getElementById('close-sidebar');
+        const levelSelect = document.getElementById('level-select');
+        const backToSectionBtn = document.getElementById('back-to-section');
+        const zoomInBtn = document.getElementById('zoom-in');
+        const zoomOutBtn = document.getElementById('zoom-out');
+        const zoomResetBtn = document.getElementById('zoom-reset');
+
+        // Initialize
+        initPage();
+
+        async function initPage() {
+            try {
+                const success = await ticketApp.init();
+                if (success) {
+                    const matchId = TicketApp.getMatchIdFromURL();
+                    const selectedMatch = matchId ? ticketApp.getMatchById(matchId) : null;
+
+                    if (selectedMatch) {
+                        document.getElementById('map-title').textContent = `${selectedMatch.homeTeam} vs ${selectedMatch.awayTeam}`;
+                        document.getElementById('match-subtitle').textContent = `${selectedMatch.stadium} • ${selectedMatch.city}, ${selectedMatch.country}`;
+                    }
+
+                    const stadiumSource = selectedMatch
+                        ? ticketApp.stadiums.find(s => s.name.toLowerCase() === selectedMatch.stadium.toLowerCase())
+                        : ticketApp.stadiums[0];
+
+                    stadiumData = {
+                        sections: {},
+                        ticketSites: ticketApp.prices.ticketSites.reduce((acc, site) => {
+                            acc[site.name] = {
+                                basePrice: site.priceMultiplier,
+                                fee: site.feePercentage / 100,
+                                url: site.url,
+                                id: site.id
+                            };
+                            return acc;
+                        }, {})
+                    };
+
+                    if (stadiumSource) {
+                        Object.entries(stadiumSource.sections).forEach(([sectionId, sectionData]) => {
+                            stadiumData.sections[sectionId] = {
+                                level: sectionData.level,
+                                name: sectionData.name,
+                                color: getColorForLevel(sectionData.level),
+                                rows: sectionData.rows,
+                                seats: sectionData.seatsPerRow,
+                                price: sectionData.price
+                            };
+                        });
+                    }
+
+                    init();
+                }
+            } catch (error) {
+                console.error('Error initializing stadium map:', error);
+            }
+        }
+
+        function getColorForLevel(level) {
+            const colors = {
+                'ground': '#667eea',
+                'second': '#764ba2',
+                'third': '#ff922b',
+                'vip': '#ffd43b'
+            };
+            return colors[level] || '#667eea';
+        }
+
+        function init() {
+            setupEventListeners();
+            updateLevelFilter();
+        }
+
+        function setupEventListeners() {
+            sectionElements.forEach(section => {
+                section.addEventListener('click', handleSectionClick);
+            });
+
+            levelSelect.addEventListener('change', handleLevelFilterChange);
+            closeSidebarBtn.addEventListener('click', closeSidebar);
+            backToSectionBtn.addEventListener('click', backToSection);
+
+            // Zoom controls
+            zoomInBtn.addEventListener('click', () => zoomMap(1.2));
+            zoomOutBtn.addEventListener('click', () => zoomMap(1 / 1.2));
+            zoomResetBtn.addEventListener('click', resetZoom);
+        }
+
+        function handleLevelFilterChange(e) {
+            state.currentLevel = e.target.value;
+            updateLevelFilter();
+        }
+
+        function updateLevelFilter() {
+            sectionElements.forEach(section => {
+                const level = section.getAttribute('data-level');
+                
+                if (state.currentLevel === 'all') {
+                    section.style.display = 'block';
+                } else if (level === state.currentLevel) {
+                    section.style.display = 'block';
+                } else {
+                    section.style.display = 'none';
+                }
+            });
+        }
+
+        function handleSectionClick(e) {
+            const section = e.currentTarget;
+            const sectionId = section.getAttribute('data-section');
+            const sectionData = stadiumData.sections[sectionId];
+
+            // Remove previous selection
+            sectionElements.forEach(s => s.classList.remove('selected'));
+            section.classList.add('selected');
+
+            state.selectedSection = sectionId;
+            state.selectedSeat = null;
+
+            // Update sidebar with section view
+            sidebarTitle.textContent = sectionData.name;
+            emptyState.style.display = 'none';
+            sidebarBody.style.display = 'block';
+            sidebarBody.innerHTML = `
+                <div class="seat-info">
+                    <div class="seat-info-header">
+                        <div style="font-size: 14px; font-weight: 600; margin-bottom: 10px;">Section ${sectionId}</div>
+                        <div style="font-size: 13px; color: #666;">Rows: ${sectionData.rows} | Seats per row: ${sectionData.seats}</div>
+                    </div>
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <h3 style="font-size: 13px; font-weight: 600; color: #333; margin-bottom: 10px; text-transform: uppercase;">Select a Seat</h3>
+                    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;">
+                        ${generateSeatButtons(sectionData.rows, sectionData.seats, sectionId)}
+                    </div>
+                </div>
+            `;
+        }
+
+        function generateSeatButtons(rows, seatsPerRow, sectionId) {
+            let html = '';
+            for (let row = 1; row <= rows; row++) {
+                for (let seat = 1; seat <= seatsPerRow; seat++) {
+                    const seatId = `${sectionId}${String.fromCharCode(64 + row)}${seat}`;
+                    const isAvailable = Math.random() > 0.3; // Random availability
+                    const status = isAvailable ? 'available' : 'sold';
+                    
+                    html += `
+                        <button class="seat-button" data-seat="${seatId}" data-section="${sectionId}" ${!isAvailable ? 'disabled' : ''}>
+                            <div style="font-size: 11px; font-weight: 600;">${String.fromCharCode(64 + row)}${seat}</div>
+                            <div style="font-size: 9px; color: ${isAvailable ? '#51cf66' : '#ff6b6b'};">${isAvailable ? 'Available' : 'Sold'}</div>
+                        </button>
+                    `;
+                }
+            }
+            return html;
+        }
+
+        // Dynamically create styles for seat buttons
+        const style = document.createElement('style');
+        style.textContent = `
+            .seat-button {
+                padding: 8px;
+                border: 1px solid #ddd;
+                border-radius: 4px;
+                background: white;
+                cursor: pointer;
+                font-size: 10px;
+                transition: all 0.3s ease;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 3px;
+            }
+            .seat-button:hover:not(:disabled) {
+                background: #f0f7ff;
+                border-color: #667eea;
+            }
+            .seat-button:disabled {
+                background: #f0f0f0;
+                cursor: not-allowed;
+                opacity: 0.6;
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Add event delegation for seat clicks
+        document.addEventListener('click', (e) => {
+            if (e.target.closest('.seat-button')) {
+                const btn = e.target.closest('.seat-button');
+                handleSeatClick(btn.getAttribute('data-seat'), btn.getAttribute('data-section'));
+            }
+        });
+
+        function handleSeatClick(seatId, sectionId) {
+            state.selectedSeat = seatId;
+            const sectionData = stadiumData.sections[sectionId];
+
+            // Get the base price from section data
+            const basePrice = sectionData.price;
+            sidebarTitle.textContent = `Seat ${seatId}`;
+            
+            // Use ticketApp to calculate prices
+            const prices = ticketApp.calculateSeatPrices(basePrice);
+            
+            let pricesHtml = '';
+            prices.forEach(site => {
+                pricesHtml += `
+                    <div class="price-item">
+                        <div class="price-site">
+                            <div class="price-site-name">${site.siteName}</div>
+                            <div class="price-site-fee">+ $${site.fee} fee (${site.feePercentage}%)</div>
+                        </div>
+                        <div>
+                            <div class="price-value">$${site.total}</div>
+                            <a href="${generateBuyLink(seatId, sectionId, site)}" 
+                               class="buy-btn" 
+                               target="_blank">
+                                Buy on ${site.siteName}
+                            </a>
+                        </div>
+                    </div>
+                `;
+            });
+
+            sidebarBody.innerHTML = `
+                <div class="breadcrumb">
+                    <button id="back-to-section">← Back to Section</button>
+                </div>
+                <div class="seat-info">
+                    <div class="seat-info-header">
+                        <div class="seat-label">${seatId}</div>
+                        <div class="seat-section">${sectionData.name}</div>
+                    </div>
+                </div>
+                <div class="price-section">
+                    <h3>Ticket Prices</h3>
+                    ${pricesHtml}
+                </div>
+            `;
+        }
+
+        function generateBuyLink(seatId, sectionId, site) {
+            // Get match ID from URL if available
+            const params = new URLSearchParams(window.location.search);
+            const matchId = params.get('matchId');
+            
+            const sectionData = stadiumData.sections[sectionId];
+            const queryParams = new URLSearchParams({
+                seat: seatId,
+                section: sectionId,
+                match: matchId || 'default',
+                price: site.total,
+                level: sectionData.level,
+                utm_source: 'world-cup-prices',
+                utm_medium: 'seat-selection',
+                utm_campaign: 'stadium-map'
+            });
+
+            return `${site.siteUrl}?${queryParams.toString()}`;
+        }
+
+        function backToSection() {
+            if (state.selectedSection) {
+                handleSectionClick(
+                    document.querySelector(`[data-section="${state.selectedSection}"]`)
+                );
+            }
+        }
+
+        function closeSidebar() {
+            emptyState.style.display = 'block';
+            sidebarBody.style.display = 'none';
+            sectionElements.forEach(s => s.classList.remove('selected'));
+            state.selectedSection = null;
+            state.selectedSeat = null;
+        }
+
+        // Zoom and pan functionality
+        function zoomMap(factor) {
+            state.zoomLevel *= factor;
+            state.zoomLevel = Math.max(1, Math.min(state.zoomLevel, 4)); // Clamp between 1 and 4
+            updateMapTransform();
+            updateZoomButtons();
+        }
+
+        function resetZoom() {
+            state.zoomLevel = 1;
+            state.panX = 0;
+            state.panY = 0;
+            updateMapTransform();
+            updateZoomButtons();
+        }
+
+        function updateMapTransform() {
+            map.style.transform = `scale(${state.zoomLevel}) translate(${state.panX}px, ${state.panY}px)`;
+            map.style.transformOrigin = 'center center';
+            map.style.transition = 'transform 0.3s ease';
+        }
+
+        function updateZoomButtons() {
+            zoomOutBtn.disabled = state.zoomLevel === 1;
+            zoomInBtn.disabled = state.zoomLevel === 4;
+        }
+
+        // Initialize zoom buttons state
+        updateZoomButtons();
+    </script>
+</body>
+</html>

@@ -1,0 +1,183 @@
+[
+  {
+    "id": "lusail",
+    "name": "Lusail Stadium",
+    "city": "Doha",
+    "capacity": 80000,
+    "image": "🏟️ Lusail Stadium",
+    "sections": {
+      "N1": {
+        "name": "North Stand - Ground Level",
+        "level": "ground",
+        "rows": 12,
+        "seatsPerRow": 24,
+        "price": 150
+      },
+      "N2": {
+        "name": "North Stand - Second Level",
+        "level": "second",
+        "rows": 8,
+        "seatsPerRow": 20,
+        "price": 200
+      },
+      "N3": {
+        "name": "North Stand - Third Level",
+        "level": "third",
+        "rows": 6,
+        "seatsPerRow": 18,
+        "price": 100
+      },
+      "S1": {
+        "name": "South Stand - Ground Level",
+        "level": "ground",
+        "rows": 12,
+        "seatsPerRow": 24,
+        "price": 150
+      },
+      "S2": {
+        "name": "South Stand - Second Level",
+        "level": "second",
+        "rows": 8,
+        "seatsPerRow": 20,
+        "price": 200
+      },
+      "S3": {
+        "name": "South Stand - Third Level",
+        "level": "third",
+        "rows": 6,
+        "seatsPerRow": 18,
+        "price": 100
+      },
+      "E1": {
+        "name": "East Stand - Ground Level",
+        "level": "ground",
+        "rows": 10,
+        "seatsPerRow": 20,
+        "price": 150
+      },
+      "E-VIP": {
+        "name": "East Stand - VIP Premium",
+        "level": "vip",
+        "rows": 8,
+        "seatsPerRow": 16,
+        "price": 400
+      },
+      "W1": {
+        "name": "West Stand - Ground Level",
+        "level": "ground",
+        "rows": 10,
+        "seatsPerRow": 20,
+        "price": 150
+      },
+      "W-VIP": {
+        "name": "West Stand - VIP Premium",
+        "level": "vip",
+        "rows": 8,
+        "seatsPerRow": 16,
+        "price": 400
+      }
+    }
+  },
+  {
+    "id": "education-city",
+    "name": "Education City Stadium",
+    "city": "Doha",
+    "capacity": 45000,
+    "image": "🏟️ Education City",
+    "sections": {
+      "N1": {
+        "name": "North Stand - Ground Level",
+        "level": "ground",
+        "rows": 10,
+        "seatsPerRow": 20,
+        "price": 120
+      },
+      "N2": {
+        "name": "North Stand - Second Level",
+        "level": "second",
+        "rows": 6,
+        "seatsPerRow": 16,
+        "price": 160
+      },
+      "S1": {
+        "name": "South Stand - Ground Level",
+        "level": "ground",
+        "rows": 10,
+        "seatsPerRow": 20,
+        "price": 120
+      },
+      "S2": {
+        "name": "South Stand - Second Level",
+        "level": "second",
+        "rows": 6,
+        "seatsPerRow": 16,
+        "price": 160
+      },
+      "E1": {
+        "name": "East Stand",
+        "level": "ground",
+        "rows": 8,
+        "seatsPerRow": 16,
+        "price": 100
+      },
+      "W1": {
+        "name": "West Stand",
+        "level": "ground",
+        "rows": 8,
+        "seatsPerRow": 16,
+        "price": 100
+      }
+    }
+  },
+  {
+    "id": "al-janoub",
+    "name": "Al Janoub Stadium",
+    "city": "Al Wakrah",
+    "capacity": 40000,
+    "image": "🏟️ Al Janoub",
+    "sections": {
+      "N1": {
+        "name": "North Stand - Ground Level",
+        "level": "ground",
+        "rows": 9,
+        "seatsPerRow": 18,
+        "price": 110
+      },
+      "N2": {
+        "name": "North Stand - Second Level",
+        "level": "second",
+        "rows": 5,
+        "seatsPerRow": 14,
+        "price": 150
+      },
+      "S1": {
+        "name": "South Stand - Ground Level",
+        "level": "ground",
+        "rows": 9,
+        "seatsPerRow": 18,
+        "price": 110
+      },
+      "S2": {
+        "name": "South Stand - Second Level",
+        "level": "second",
+        "rows": 5,
+        "seatsPerRow": 14,
+        "price": 150
+      },
+      "E1": {
+        "name": "East Stand",
+        "level": "ground",
+        "rows": 7,
+        "seatsPerRow": 14,
+        "price": 90
+      },
+      "W1": {
+        "name": "West Stand",
+        "level": "ground",
+        "rows": 7,
+        "seatsPerRow": 14,
+        "price": 90
+      }
+    }
+  }
+]
