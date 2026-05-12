@@ -69,6 +69,36 @@
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
 
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            flex: 1;
+        }
+
+        .back-btn-header {
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.4);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .back-btn-header:hover {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: rgba(255, 255, 255, 0.6);
+            transform: translateX(-2px);
+        }
+
         .header h1 {
             font-size: 24px;
             font-weight: 600;
@@ -672,9 +702,12 @@
     <div class="container">
         <div class="main-content">
             <div class="header">
-                <div>
-                    <h1 id="map-title">⚽ World Cup Stadium Map</h1>
-                    <div id="match-subtitle" class="match-subtitle">Choose your section and seat with a modern stadium view.</div>
+                <div class="header-left">
+                    <a href="" id="back-to-match-link" class="back-btn-header">← Back to Match</a>
+                    <div>
+                        <h1 id="map-title">⚽ World Cup Stadium Map</h1>
+                        <div id="match-subtitle" class="match-subtitle">Choose your section and seat with a modern stadium view.</div>
+                    </div>
                 </div>
                 <div class="level-filter">
                     <label for="level-select">View Level:</label>
@@ -844,6 +877,11 @@
                     if (selectedMatch) {
                         document.getElementById('map-title').textContent = `${selectedMatch.homeTeam} vs ${selectedMatch.awayTeam}`;
                         document.getElementById('match-subtitle').textContent = `${selectedMatch.stadium} • ${selectedMatch.city}, ${selectedMatch.country}`;
+                        // Set the back button to link to match-details.html with the match ID
+                        document.getElementById('back-to-match-link').href = `match-details.html?matchId=${matchId}`;
+                    } else {
+                        // If no match ID, go back to main page
+                        document.getElementById('back-to-match-link').href = 'index.html';
                     }
 
                     const stadiumSource = selectedMatch
